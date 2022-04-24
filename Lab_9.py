@@ -11,11 +11,13 @@ from pokeapi import get_pokemon_image_url, get_pokemon_list
 
 def main():
     
+    #validate the script path and make image directory if doesn't exists
     script_dir = sys.path[0]
     images_dir = os.path.join(script_dir,'images')
     if not os.path.isdir(images_dir):
         os.makedirs(images_dir)
 
+    #create the main application interface
     root =Tk()
     root.title('Pokemon Image Viewer')
     app_id = 'COMP593.ImageViewer'
@@ -23,17 +25,20 @@ def main():
     root.iconbitmap(os.path.join(script_dir,'PokeBall.ico'))
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
-    root.geometry('600x600  ')
+    root.geometry('600x600')
 
+    #create the window frame
     frm = ttk.Frame(root)
     frm.grid(sticky=(N,S,E,W))  
     frm.columnconfigure(0, weight=1)
     frm.rowconfigure(0, weight=1)
 
+    #Populate the widgets in the user input frame
     img_pokemon = PhotoImage(file=os.path.join(script_dir,'Pokemon.png'))
     lbl_image = Label(frm, image=img_pokemon)
     lbl_image.grid(row=0, column=0)
 
+    #get pokemon list from the function 
     pokemon_list = get_pokemon_list(limit= 1000)
     pokemon_list.sort()
     cbo_pokemon_sel = ttk.Combobox(frm, values= pokemon_list, state='readonly')
@@ -42,6 +47,7 @@ def main():
 
     def handle_cbo_pokemon_sel(event):
         
+        #Event function for the pokemon slection list
         pokemon_name = cbo_pokemon_sel.get()
         image_url = get_pokemon_image_url(pokemon_name)
         image_path = os.path.join(images_dir, pokemon_name + '.png')
@@ -51,6 +57,8 @@ def main():
     cbo_pokemon_sel.bind('<<ComboboxSelected>>', handle_cbo_pokemon_sel)
 
     def btn_set_desktop_click():
+
+        #Event function for the 'set as the desktop image' button
         pokemon_name = cbo_pokemon_sel.get()
         image_path = os.path.join(images_dir, pokemon_name + '.png')
         set_dektop_background_image(image_path)
@@ -62,7 +70,8 @@ def main():
     root.mainloop()
 
 def set_dektop_background_image(path):
-
+    
+    #function for changing the desktop background
     try:
          ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 0)
 
@@ -71,6 +80,7 @@ def set_dektop_background_image(path):
 
 def download_image_from_url(url,path):
     
+    #funrtion for downloading the selected image into disk
     if os.path.isfile(path):
         return path
 
